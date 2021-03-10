@@ -1,6 +1,5 @@
 (ns my-project.app
   (:require
-    [cljs.reader :as rr]
     [reagent.core :as r]
     [reagent.dom :as rdom]
     ))
@@ -30,8 +29,8 @@
 
 
 (defn save_value [_]
-      (js/console.log "Saved value " @current-value)
-
+      (reset! saved_value (cljs.reader/read-string @current-value))
+      (js/console.log "Saved value " @saved_value)
       (reset! current-value "0")
       )
 
@@ -41,6 +40,10 @@
       (reset! saved_func func)
       )
 
+(defn do_shit [_]
+      (js/console.log "Shit happens")
+
+      )
 
 (defn mini-app []
       [:table {:border "1"}
@@ -66,7 +69,7 @@
         [:tr
          [:td [:input {:type "button" :value "." :on-click #(update_current ".")}]]
          [:td [:input {:type "button" :value "0" :on-click #(update_current "0")}]]
-         [:td [:input {:type "button" :value "="}]]
+         [:td [:input {:type "button" :value "=" :on-click #(do_shit "0") }]]
          [:td [:input {:type "button" :value "*" :on-click #(save_function "+")}]]]]]
       )
 
