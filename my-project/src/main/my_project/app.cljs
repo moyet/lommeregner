@@ -46,13 +46,8 @@
       (reset! current-value "0")
       )
 
-(defn save_function [func]
-      (save_value func)
-      (add2history func)
-      (reset! saved_func func)
-      )
 
-(defn calculate [_]
+(defn calculate_pressed [_]
       (
         let [
              mmap {"/" /, "+" +, "*" *, "-" -}
@@ -66,6 +61,22 @@
       )
 
 
+(defn function_pressed [func]
+      (if (nil? @saved_func)
+        (do
+          (save_value func)
+          (add2history func)
+          (reset! saved_func func)
+          )
+        ;else
+        (do
+          (reset! saved_func func)
+          (add2history func)
+          (calculate_pressed :denne_plads_er_med_vilje_tom)
+          )
+        )
+      )
+
 (defn mini-app []
       [:div.container
       [:table {:border "1"}
@@ -77,22 +88,22 @@
          [:td [:input {:type "button" :value "1" :on-click #(update_current "1")}]]
          [:td [:input {:type "button" :value "2" :on-click #(update_current "2")}]]
          [:td [:input {:type "button" :value "3" :on-click #(update_current "3")}]]
-         [:td [:input {:type "button" :value "/" :on-click #(save_function "/")}]]]
+         [:td [:input {:type "button" :value "/" :on-click #(function_pressed "/")}]]]
         [:tr
          [:td [:input {:type "button" :value "4" :on-click #(update_current "4")}]]
          [:td [:input {:type "button" :value "5" :on-click #(update_current "5")}]]
          [:td [:input {:type "button" :value "6" :on-click #(update_current "6")}]]
-         [:td [:input {:type "button" :value "-" :on-click #(save_function "-")}]]]
+         [:td [:input {:type "button" :value "-" :on-click #(function_pressed "-")}]]]
         [:tr
          [:td [:input {:type "button" :value "7" :on-click #(update_current "7")}]]
          [:td [:input {:type "button" :value "8" :on-click #(update_current "8")}]]
          [:td [:input {:type "button" :value "9" :on-click #(update_current "9")}]]
-         [:td [:input {:type "button" :value "+" :on-click #(save_function "+")}]]]
+         [:td [:input {:type "button" :value "+" :on-click #(function_pressed "+")}]]]
         [:tr
          [:td [:input {:type "button" :value "." :on-click #(update_current ".")}]]
          [:td [:input {:type "button" :value "0" :on-click #(update_current "0")}]]
-         [:td [:input {:type "button" :value "=" :on-click #(calculate "0") }]]
-         [:td [:input {:type "button" :value "*" :on-click #(save_function "*")}]]]
+         [:td [:input {:type "button" :value "=" :on-click #(calculate_pressed "0") }]]
+         [:td [:input {:type "button" :value "*" :on-click #(function_pressed "*")}]]]
         ]
        ]
         [:h2.small "History"]
