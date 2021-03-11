@@ -48,17 +48,26 @@
 
 (defn save_function [func]
       (save_value func)
+      (add2history func)
       (reset! saved_func func)
       )
 
 (defn calculate [_]
-       (
-         let [mmap {"/" /, "+" +, "*" *, "-" -}]
-             (reset! current-value ((mmap @saved_func) @saved_value (cljs.reader/read-string @current-value)))
-       ))
+      (
+        let [
+             mmap {"/" /, "+" +, "*" *, "-" -}
+             new_value (cljs.reader/read-string @current-value),
+             calculated ((mmap @saved_func) @saved_value new_value),
+             ]
+            (add2history new_value)
+            (add2history (str @saved_value " " @saved_func " "  new_value " = " calculated))
+            (reset! current-value (str calculated))
+            )
+      )
 
 
 (defn mini-app []
+      [:div.container
       [:table {:border "1"}
        [:tbody
         [:tr
@@ -85,11 +94,10 @@
          [:td [:input {:type "button" :value "=" :on-click #(calculate "0") }]]
          [:td [:input {:type "button" :value "*" :on-click #(save_function "*")}]]]
         ]
-       [:br]
-       [:br]
-       [:h2.small "History"]
-       [:div.history ]
-        [:ol#histlist
+       ]
+        [:h2.small "History"]
+        [:div.history ]
+        [:ul#histlist
          @history
          ]
        ]
