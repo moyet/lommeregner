@@ -2,13 +2,25 @@
   (:require
     [reagent.core :as r]
     [reagent.dom :as rdom]
+    [cljs.reader :as readder]
+    [clojure.browser.dom :as dom]
     ))
 
 (def current-value (r/atom "0"))
 
-(def saved_value (r/atom 0))
+(def saved_value (r/atom nil))
 
-(def saved_func (r/atom 0))
+(def saved_func (r/atom nil))
+
+(def result (r/atom nil))
+
+(def history (r/atom ["nil"]))
+
+(defn add2history [val]
+      (do
+        (swap! history #(conj % [:li val ]))
+        )
+)
 
 
 (defn update_current [val]
@@ -27,23 +39,24 @@
         )
       )
 
-
 (defn save_value [_]
       (reset! saved_value (cljs.reader/read-string @current-value))
+      (add2history @saved_value)
       (js/console.log "Saved value " @saved_value)
       (reset! current-value "0")
       )
 
 (defn save_function [func]
-      (js/console.log "save_function " func)
       (save_value func)
       (reset! saved_func func)
       )
 
-(defn do_shit [_]
-      (js/console.log "Shit happens")
+(defn calculate [_]
+       (
+         let [mmap {"/" /, "+" +, "*" *, "-" -}]
+             (reset! current-value ((mmap @saved_func) @saved_value (cljs.reader/read-string @current-value)))
+       ))
 
-      )
 
 (defn mini-app []
       [:table {:border "1"}
@@ -69,8 +82,17 @@
         [:tr
          [:td [:input {:type "button" :value "." :on-click #(update_current ".")}]]
          [:td [:input {:type "button" :value "0" :on-click #(update_current "0")}]]
-         [:td [:input {:type "button" :value "=" :on-click #(do_shit "0") }]]
-         [:td [:input {:type "button" :value "*" :on-click #(save_function "+")}]]]]]
+         [:td [:input {:type "button" :value "=" :on-click #(calculate "0") }]]
+         [:td [:input {:type "button" :value "*" :on-click #(save_function "*")}]]]
+        ]
+       [:br]
+       [:br]
+       [:h2.small "History"]
+       [:div.history ]
+        [:ol#histlist
+         @history
+         ]
+       ]
       )
 
 (defn ^:export run []
@@ -82,8 +104,3 @@
 
 (defn add [a b]
       (+ a b))
-
-(defn rewrite [val]
-      [:h2 val]
-      )
-
