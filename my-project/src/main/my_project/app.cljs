@@ -79,16 +79,20 @@
 
 (defn mini-app []
       [:div.container
-      [:table {:border "1"}
+       [:div.container
+        [:p.h1 "Lommeregner"]
+        ]
+      [:table.table.table-bordered
        [:tbody
         [:tr
          [:td {:colspan "3"} [:input#result {:readonly "" :type "text" :value @current-value}]]
          [:td [:input {:type "button" :value "c" :on-click #(reset! current-value "0")}]]]
         [:tr
-         [:td [:input {:type "button" :value "1" :on-click #(update_current "1")}]]
-         [:td [:input {:type "button" :value "2" :on-click #(update_current "2")}]]
-         [:td [:input {:type "button" :value "3" :on-click #(update_current "3")}]]
-         [:td [:input {:type "button" :value "/" :on-click #(function_pressed "/")}]]]
+         [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current "1")} "1" ]]
+         [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current "2")} "2" ]]
+         [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current "3")} "3" ]]
+         [:td [:button.btn.btn-dark {:type "button" :on-click #(function_pressed "/")} "/" ]]]
+
         [:tr
          [:td [:input {:type "button" :value "4" :on-click #(update_current "4")}]]
          [:td [:input {:type "button" :value "5" :on-click #(update_current "5")}]]
