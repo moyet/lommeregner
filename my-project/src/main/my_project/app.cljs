@@ -22,7 +22,6 @@
         )
 )
 
-
 (defn update_current [val]
       (js/console.log "update_current " val " " @current-value)
       (if
@@ -46,11 +45,10 @@
       (reset! current-value "0")
       )
 
-
 (defn calculate_pressed [_]
       (
         let [
-             mmap {"/" /, "+" +, "*" *, "-" -}
+             mmap {"/" /, "+" +, "*" *, "-" -},
              new_value (cljs.reader/read-string @current-value),
              calculated ((mmap @saved_func) @saved_value new_value),
              ]
@@ -60,6 +58,15 @@
             )
       )
 
+
+(defn reset_all [_]
+      (do
+       (reset! current-value "0")
+       (reset! saved_value nil)
+       (reset! saved_func nil)
+       (reset! result nil)
+       )
+      )
 
 (defn function_pressed [func]
       (if (nil? @saved_func)
@@ -78,45 +85,52 @@
       )
 
 (defn mini-app []
-      [:div.container
-       [:div.container
-        [:p.h1 "Lommeregner"]
-        ]
-      [:table.table.table-bordered
-       [:tbody
-        [:tr
-         [:td {:colspan "3"} [:input#result {:readonly "" :type "text" :value @current-value}]]
-         [:td [:input {:type "button" :value "c" :on-click #(reset! current-value "0")}]]]
-        [:tr
-         [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current "1")} "1" ]]
-         [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current "2")} "2" ]]
-         [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current "3")} "3" ]]
-         [:td [:button.btn.btn-dark {:type "button" :on-click #(function_pressed "/")} "/" ]]]
+           [:div.container
+            [:div.container
+             [:p.h1 "Lommeregner"]
+             ]
+            [:table.table.table-bordered
+             [:tbody
+              [:tr
+               [:td {:colspan "3"}
+                [:div.input-group.mb-3
+                 [:input.form-control
+                  {:type "text" :placeholder @current-value }
+                  ]]
+                ]
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(reset_all "0")} "c"]]]
+              [:tr
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current "1")} "1"]]
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current "2")} "2"]]
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current "3")} "3"]]
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(function_pressed "/")} "/"]]]
 
-        [:tr
-         [:td [:input {:type "button" :value "4" :on-click #(update_current "4")}]]
-         [:td [:input {:type "button" :value "5" :on-click #(update_current "5")}]]
-         [:td [:input {:type "button" :value "6" :on-click #(update_current "6")}]]
-         [:td [:input {:type "button" :value "-" :on-click #(function_pressed "-")}]]]
-        [:tr
-         [:td [:input {:type "button" :value "7" :on-click #(update_current "7")}]]
-         [:td [:input {:type "button" :value "8" :on-click #(update_current "8")}]]
-         [:td [:input {:type "button" :value "9" :on-click #(update_current "9")}]]
-         [:td [:input {:type "button" :value "+" :on-click #(function_pressed "+")}]]]
-        [:tr
-         [:td [:input {:type "button" :value "." :on-click #(update_current ".")}]]
-         [:td [:input {:type "button" :value "0" :on-click #(update_current "0")}]]
-         [:td [:input {:type "button" :value "=" :on-click #(calculate_pressed "0") }]]
-         [:td [:input {:type "button" :value "*" :on-click #(function_pressed "*")}]]]
-        ]
-       ]
-        [:h2.small "History"]
-        [:div.history ]
-        [:ul#histlist
-         @history
-         ]
-       ]
-      )
+              [:tr
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current "4")} "4"]]
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current "5")} "5"]]
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current "6")} "6"]]
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(function_pressed "-")} "-"]]]
+
+              [:tr
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current "7")} "7"]]
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current "8")} "8"]]
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current "9")} "9"]]
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(function_pressed "+")} "+"]]]
+
+              [:tr
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current ".")} "."]]
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current "0")} "0"]]
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(calculate_pressed "0")} "="]]
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(function_pressed "*")} "*"]]]
+              ]
+             ]
+            [:h2.small "History"]
+            [:div.history]
+            [:ul#histlist
+             @history
+             ]
+            ]
+           )
 
 (defn ^:export run []
       (rdom/render [mini-app] (js/document.getElementById "app")))
