@@ -22,14 +22,12 @@
          (js/console.log "saved_value: " @saved_value)
          (js/console.log "saved_func: " @saved_func)
          (js/console.log "result: " @result)
-      )
-      )
+      ))
 
 (defn add2history [val]
       (do
         (swap! history #(conj % [:li val ]))
-        )
-)
+      ))
 
 (defn update_current [val]
       (js/console.log "update_current " val " " @current-value)
@@ -43,18 +41,16 @@
           (js/console.log "@current-value")
           (js/console.log (str @current-value val))
           (reset! current-value (str @current-value val))
-          )
-        )
-      )
+          )))
 
-(defn save_value [_]
+(defn save_value []
       (reset! saved_value (cljs.reader/read-string @current-value))
       (add2history @saved_value)
       (js/console.log "Saved value " @saved_value)
       (reset! current-value "0")
       )
 
-(defn calculate_pressed [_]
+(defn calculate_pressed []
       (
         let [
              mmap {"/" /, "+" +, "*" *, "-" -},
@@ -71,34 +67,46 @@
             )
       )
 
-(defn reset_all [_]
-      (do
-       (reset! current-value "0")
-       (reset! saved_value nil)
-       (reset! saved_func nil)
-       (reset! result nil)
-       )
+(defn reset_all []
+     (reset! current-value "0")
+     (reset! saved_value nil)
+     (reset! saved_func nil)
+     (reset! result nil)
       )
 
+(defn reset_history []
+      (reset! history ["nil"]))
+
+(defn create_history []
+      [:div.container [:h3 "History" ] [:div#my_his.history
+           [:div#his1.alert.alert-success {:role "alert"}
+            [:ul#listig
+             @history
+             ]]]]
+      )
+
+(defn add_history [message]
+        ((.html (js/jQuery "#listig") "Hi!")))
+
 (defn function_pressed [func]
-      (.log js/console "pressed")
       (if (nil? @saved_func)
         (do
-          (save_value func)
+          (save_value)
           (add2history func)
           (reset! saved_func func)
           )
         ;else
         (do
+          (js/console.log "We have an else " )
           (reset! saved_func func)
           (add2history func)
-          (calculate_pressed :denne_plads_er_med_vilje_tom)
+          (calculate_pressed)
           )
         )
       )
 
 (defn numberbttn [my_value]
-      [:td [:button.btn.btn-dark {:id my_value :type "button" :on-click #(update_current (str my_value))} my_value]]
+      [:td {:id (#(str "tr_" %) my_value)} [:button.btn.btn-dark {:id #(str "id_" %) my_value) :type "button" :on-click #(update_current (str my_value))} my_value]]
       )
 
 (defn mini-app []
@@ -115,39 +123,29 @@
                   {:type "text" :placeholder @current-value }
                   ]]
                 ]
-               [:td [:button.btn.btn-dark {:type "button" :on-click #(reset_all "0")} "c"]]]
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(reset_all)} "c"]]]
               [:tr
-
-               (numberbttn 1)
-               (numberbttn 2)
-               (numberbttn 3)
+               (map numberbttn (range 1 4))
                [:td [:button.btn.btn-dark {:type "button" :on-click #(function_pressed "/")} "/"]]]
 
               [:tr
-               (numberbttn 4)
-               (numberbttn 5)
-               (numberbttn 6)
+               (map numberbttn (range 4 7))
+
                [:td [:button.btn.btn-dark {:type "button" :on-click #(function_pressed "-")} "-"]]]
 
               [:tr
-               (numberbttn 7)
-               (numberbttn 8)
-               (numberbttn 9)
+               (map numberbttn (range 7 10))
+
                [:td [:button.btn.btn-dark {:type "button" :on-click #(function_pressed "+")} "+"]]]
 
               [:tr
                [:td [:button.btn.btn-dark {:type "button" :on-click #(update_current ".")} "."]]
                (numberbttn 0)
-               [:td [:button.btn.btn-dark {:type "button" :on-click #(calculate_pressed "0")} "="]]
+               [:td [:button.btn.btn-dark {:type "button" :on-click #(calculate_pressed)} "="]]
                [:td [:button.btn.btn-dark {:type "button" :on-click #(function_pressed "*")} "*"]]]
               ]
              ]
-            [:h2.small "History"]
-            [:div#my_his.history
-             [:div.alert.alert-success {:role "alert"}
-              @history
-              ]
-             ]
+            (create_history)
             ]
            )
 

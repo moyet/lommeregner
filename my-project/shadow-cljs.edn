@@ -3,7 +3,6 @@
  :nrepl {:port 55555}
  :dependencies           [
                           [reagent "1.0.0-alpha2"]
-                          [racehub/om-bootstrap "0.6.1"]
                           ]
  :builds {:app {:target     :browser
                 :output-dir "public/scripts/"
